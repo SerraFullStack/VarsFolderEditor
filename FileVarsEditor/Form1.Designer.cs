@@ -45,6 +45,7 @@
             this.toolStripTextBox2 = new System.Windows.Forms.ToolStripTextBox();
             this.exportarOBancoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importarUmBancoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.button3 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -71,6 +72,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.button3);
             this.splitContainer1.Panel1.Controls.Add(this.button2);
             this.splitContainer1.Panel1.Controls.Add(this.button1);
             this.splitContainer1.Panel1.Controls.Add(this.treeView1);
@@ -240,6 +242,17 @@
             this.importarUmBancoToolStripMenuItem.Text = "Importar um banco";
             this.importarUmBancoToolStripMenuItem.Click += new System.EventHandler(this.importarUmBancoToolStripMenuItem_Click);
             // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button3.Location = new System.Drawing.Point(200, 570);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 7;
+            this.button3.Text = "Nova";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -280,6 +293,7 @@
         private System.Windows.Forms.ToolStripTextBox toolStripTextBox2;
         private System.Windows.Forms.ToolStripMenuItem exportarOBancoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importarUmBancoToolStripMenuItem;
+        private System.Windows.Forms.Button button3;
     }
 }
 

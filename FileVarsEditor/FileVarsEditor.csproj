@@ -56,11 +56,20 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormNewVar.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormNewVar.Designer.cs">
+      <DependentUpon>FormNewVar.cs</DependentUpon>
+    </Compile>
     <Compile Include="ImporterExporter\ImporterExporter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormNewVar.resx">
+      <DependentUpon>FormNewVar.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

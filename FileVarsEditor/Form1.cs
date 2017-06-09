@@ -286,6 +286,30 @@ namespace FileVarsEditor
                 tr.Start();
             }
         }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string name = "";
+            string originalEditionNode = "";
+            if (editingNode != null)
+            {
+                originalEditionNode = editingNode.Name;
+                name = Path.GetFileName(editingNode.Name);
+            }
+            FormNewVar nv = new FormNewVar(currengGloablDbPath, name, "");
+            nv.ShowDialog();
+
+            loadGlobalDb(currengGloablDbPath);
+
+            if (originalEditionNode != "")
+            {
+                TreeNode[] temp = treeView1.Nodes.Find(originalEditionNode, true);
+
+                if (temp.Length > 0)
+                    temp[0].TreeView.SelectedNode = temp[0];
+            }
+
+        }
     }
 
     public abstract class Prompt
