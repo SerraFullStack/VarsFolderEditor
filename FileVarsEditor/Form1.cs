@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using FilesVars;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -20,16 +21,50 @@ namespace FileVarsEditor
         TreeNode editingNode;
         string currengGloablDbPath;
         private object dynamic;
+        Vars vars = new Vars();
+        
 
         public Form1()
         {
             InitializeComponent();
+            this.loadLastFoldersList();
         }
 
         public void loadFolder(string globalDbPath)
         {
             loadGlobalDb(globalDbPath);
             currengGloablDbPath = globalDbPath;
+
+            int cont = vars.get("lastFolders.count", 0).AsInt;
+
+            if (vars.get("lastFolders." + (cont - 1).ToString(), "").AsString != globalDbPath)
+            {
+                vars.set("lastFolders." + cont, globalDbPath);
+                vars.set("lastFolders.count", (cont+1).ToString());
+            }
+
+            this.loadLastFoldersList();
+        }
+
+        private void loadLastFoldersList()
+        {
+            int cont = vars.get("lastFolders.count", 0).AsInt-1;
+            int loadeds = 0;
+            recentesToolStripMenuItem.DropDownItems.Clear();
+
+            while ((loadeds < 10) && (cont >= 0))
+            {
+                string curr = vars.get("lastFolders." + (cont).ToString(), "").AsString;
+                //recentesToolStripMenuItem
+                ToolStripMenuItem temp = new ToolStripMenuItem(curr);
+                temp.Click += delegate (object sender, EventArgs e)
+                {
+                    this.loadFolder(((ToolStripMenuItem)sender).Text);
+                };
+                recentesToolStripMenuItem.DropDownItems.Add(temp);
+
+                cont--;
+            }
         }
 
         public void loadGlobalDb(string globalDbPath)

@@ -30,6 +30,7 @@
         {
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.treeView1 = new System.Windows.Forms.TreeView();
@@ -45,7 +46,7 @@
             this.toolStripTextBox2 = new System.Windows.Forms.ToolStripTextBox();
             this.exportarOBancoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importarUmBancoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.button3 = new System.Windows.Forms.Button();
+            this.recentesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -90,6 +91,17 @@
             this.splitContainer1.Size = new System.Drawing.Size(834, 603);
             this.splitContainer1.SplitterDistance = 278;
             this.splitContainer1.TabIndex = 4;
+            // 
+            // button3
+            // 
+            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.button3.Location = new System.Drawing.Point(200, 570);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 7;
+            this.button3.Text = "Nova";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
@@ -207,6 +219,7 @@
             this.arquivoToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.abrirPastaDeArquivosToolStripMenuItem,
             this.toolStripTextBox2,
+            this.recentesToolStripMenuItem,
             this.exportarOBancoToolStripMenuItem,
             this.importarUmBancoToolStripMenuItem});
             this.arquivoToolStripMenuItem.Name = "arquivoToolStripMenuItem";
@@ -242,16 +255,11 @@
             this.importarUmBancoToolStripMenuItem.Text = "Importar um banco";
             this.importarUmBancoToolStripMenuItem.Click += new System.EventHandler(this.importarUmBancoToolStripMenuItem_Click);
             // 
-            // button3
+            // recentesToolStripMenuItem
             // 
-            this.button3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.button3.Location = new System.Drawing.Point(200, 570);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 7;
-            this.button3.Text = "Nova";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.recentesToolStripMenuItem.Name = "recentesToolStripMenuItem";
+            this.recentesToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.recentesToolStripMenuItem.Text = "Recentes";
             // 
             // Form1
             // 
@@ -294,6 +302,7 @@
         private System.Windows.Forms.ToolStripMenuItem exportarOBancoToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem importarUmBancoToolStripMenuItem;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.ToolStripMenuItem recentesToolStripMenuItem;
     }
 }
 
