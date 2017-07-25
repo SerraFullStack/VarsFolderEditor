@@ -44,9 +44,9 @@
             this.arquivoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.abrirPastaDeArquivosToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripTextBox2 = new System.Windows.Forms.ToolStripTextBox();
+            this.recentesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportarOBancoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importarUmBancoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.recentesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -136,6 +136,7 @@
             this.treeView1.Size = new System.Drawing.Size(274, 560);
             this.treeView1.TabIndex = 1;
             this.treeView1.NodeMouseClick += new System.Windows.Forms.TreeNodeMouseClickEventHandler(this.treeView1_NodeMouseClick);
+            this.treeView1.KeyUp += new System.Windows.Forms.KeyEventHandler(this.treeView1_KeyUp);
             // 
             // lbModifiedAt
             // 
@@ -241,6 +242,12 @@
             this.toolStripTextBox2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.toolStripTextBox2_KeyPress);
             this.toolStripTextBox2.KeyUp += new System.Windows.Forms.KeyEventHandler(this.toolStripTextBox2_KeyUp);
             // 
+            // recentesToolStripMenuItem
+            // 
+            this.recentesToolStripMenuItem.Name = "recentesToolStripMenuItem";
+            this.recentesToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
+            this.recentesToolStripMenuItem.Text = "Recentes";
+            // 
             // exportarOBancoToolStripMenuItem
             // 
             this.exportarOBancoToolStripMenuItem.Name = "exportarOBancoToolStripMenuItem";
@@ -255,12 +262,6 @@
             this.importarUmBancoToolStripMenuItem.Text = "Importar um banco";
             this.importarUmBancoToolStripMenuItem.Click += new System.EventHandler(this.importarUmBancoToolStripMenuItem_Click);
             // 
-            // recentesToolStripMenuItem
-            // 
-            this.recentesToolStripMenuItem.Name = "recentesToolStripMenuItem";
-            this.recentesToolStripMenuItem.Size = new System.Drawing.Size(195, 22);
-            this.recentesToolStripMenuItem.Text = "Recentes";
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -268,8 +269,11 @@
             this.ClientSize = new System.Drawing.Size(833, 632);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
+            this.KeyPreview = true;
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Editor de pasta de variáveis";
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();

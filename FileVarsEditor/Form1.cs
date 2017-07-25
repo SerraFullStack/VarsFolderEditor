@@ -345,10 +345,44 @@ namespace FileVarsEditor
             }
 
         }
+
+        private void treeView1_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Delete)
+            {
+                button2_Click(sender, e);
+            }
+        }
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                if (e.KeyCode == Keys.N)
+                {
+                    button3_Click(sender, e);
+                }
+                else if (e.KeyCode == Keys.S)
+                {
+                    btSave_Click(sender, e);
+                }
+            }
+            else if (e.KeyCode == Keys.F5)
+            {
+                btReload_Click(sender, e);
+            }
+        }
     }
 
     public abstract class Prompt
     {
         
     }
+
+    
 }
