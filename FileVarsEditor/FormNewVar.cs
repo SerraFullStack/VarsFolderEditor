@@ -34,11 +34,13 @@ namespace FileVarsEditor
             if ((path.Length > 0) && (path[path.Length-1] != '\\'))
                 path += "\\";
             System.IO.File.WriteAllText(path + tbName.Text, tbValue.Text);
+            DialogResult = DialogResult.OK;
             this.Close();
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            DialogResult = DialogResult.Cancel;
             this.Close();
         }
     }

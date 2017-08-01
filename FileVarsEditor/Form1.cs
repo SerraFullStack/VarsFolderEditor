@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Dynamic;
 using System.IO;
@@ -352,6 +353,10 @@ namespace FileVarsEditor
             {
                 button2_Click(sender, e);
             }
+            else if (e.KeyCode == Keys.E)
+            {
+                editKey();
+            }
         }
 
         private void Form1_MouseDown(object sender, MouseEventArgs e)
@@ -376,6 +381,34 @@ namespace FileVarsEditor
             {
                 btReload_Click(sender, e);
             }
+        }
+
+        public void editKey(string KeyName = "")
+        {
+            if (KeyName == "")
+                KeyName = Path.GetFileName(editingNode.Name);
+
+            string text = "";
+            if (File.Exists(editingNode.Name))
+                text = File.ReadAllText(editingNode.Name);
+
+
+            FormNewVar nv = new FormNewVar(currengGloablDbPath, KeyName, text);
+            nv.ShowDialog();
+            if (nv.DialogResult == DialogResult.OK)
+            {
+                File.Delete(editingNode.Name);
+
+                loadGlobalDb(currengGloablDbPath);
+            }
+
+
+
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Process.GetCurrentProcess().Kill();
         }
     }
 

@@ -272,6 +272,7 @@
             this.KeyPreview = true;
             this.Name = "Form1";
             this.Text = "Editor de pasta de variáveis";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Form1_KeyDown);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form1_MouseDown);
             this.splitContainer1.Panel1.ResumeLayout(false);
