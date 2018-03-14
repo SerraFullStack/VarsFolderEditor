@@ -1,6 +1,8 @@
 ﻿using FilesVars;
+using Libs;
 using Newtonsoft.Json;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -28,7 +30,7 @@ namespace FileVarsEditor
         public Form1()
         {
             InitializeComponent();
-            this.loadLastFoldersList();
+            
         }
 
         public void loadFolder(string globalDbPath)
@@ -53,62 +55,125 @@ namespace FileVarsEditor
             int loadeds = 0;
             recentesToolStripMenuItem.DropDownItems.Clear();
 
+            List<string> addedToMenu = new List<string>();
+
             while ((loadeds < 10) && (cont >= 0))
             {
-                string curr = vars.get("lastFolders." + (cont).ToString(), "").AsString;
-                //recentesToolStripMenuItem
-                ToolStripMenuItem temp = new ToolStripMenuItem(curr);
-                temp.Click += delegate (object sender, EventArgs e)
+                string currName = vars.get("lastFolders." + cont.ToString(), "").AsString;
+                if (!addedToMenu.Contains(currName))
                 {
-                    this.loadFolder(((ToolStripMenuItem)sender).Text);
-                };
-                recentesToolStripMenuItem.DropDownItems.Add(temp);
+                    addedToMenu.Add(currName);
+                    EasyThread.StartNew(delegate (EasyThread thPointer, object arguments)
+                    {
+                        string curr = (string)((object[])arguments)[1];
 
+
+                        //recentesToolStripMenuItem
+                        try
+                        {
+
+                            if (Directory.Exists(curr))
+                            {
+
+                                ToolStripMenuItem temp = new ToolStripMenuItem(curr);
+                                temp.Click += delegate (object sender, EventArgs e)
+                                {
+                                    this.loadFolder(((ToolStripMenuItem)sender).Text);
+                                };
+                                this.Invoke((MethodInvoker)delegate ()
+                                {
+                                    recentesToolStripMenuItem.DropDownItems.Add(temp);
+                                });
+                            }
+
+                        }
+                        catch { }
+                    }, false, new object[] { cont, currName });
+                }
                 cont--;
             }
         }
 
+
+        private void ivk(Action ac)
+        {
+            this.Invoke((MethodInvoker)delegate() { ac(); });
+        }
         public void loadGlobalDb(string globalDbPath)
         {
-            treeView1.Nodes.Clear();
-            //lista os arquivos
-            string[] files = Directory.GetFiles(globalDbPath);
-
-            //define a lista de nodos atual como sendo o nodo raíz do treeview
-            var parentAtt = treeView1.Nodes;
-
-            progressBar1.Maximum = files.Length;
-            progressBar1.Value = 0;
-            progressBar1.Show();
-            treeView1.Hide();
-            foreach (var attFname in files)
+            EasyThread.StartNew(delegate (EasyThread sender, object arguments)
             {
-                parentAtt = treeView1.Nodes;
+                
 
-                progressBar1.Value = progressBar1.Value + 1;
-                var att = Path.GetFileName(attFname);
-                string[] names = att.Split('.');
-                string completeName = globalDbPath + "\\";
-                foreach (var nameAtt in names)
+                //define a lista de nodos atual como sendo o nodo raíz do treeview
+                var parentAtt = treeView1.Nodes;
+
+                ivk(delegate ()
                 {
-                    completeName += nameAtt;
-                    //verifica se o nome atual já está na lista parent
-                    if (parentAtt.ContainsKey(completeName))
+                    progressBar1.Maximum = 1;
+                    progressBar1.Value = 0;
+                    progressBar1.Show();
+                });
+                try
+                {
+                    //lista os arquivos
+                    string[] files = Directory.GetFiles(globalDbPath);
+                    
+                    ivk(delegate ()
                     {
-                        //define o nodo encontrado como o parentAtt
-                        parentAtt = parentAtt[parentAtt.IndexOfKey(completeName)].Nodes;
-                    }
-                    else
+                        treeView1.Nodes.Clear();
+                        progressBar1.Maximum = files.Length;
+                        //treeView1.Hide();
+                    });
+
+                    foreach (var attFname in files)
                     {
-                        //adiciona o nodo na lista e o define como parent
-                        parentAtt = parentAtt.Add(completeName, nameAtt).Nodes;
+                        ivk(delegate ()
+                        {
+                            parentAtt = treeView1.Nodes;
+                            progressBar1.Value = progressBar1.Value + 1;
+                        });
+
+                        var att = Path.GetFileName(attFname);
+                        string[] names = att.Split('.');
+                        string completeName = globalDbPath + "\\";
+                        
+                        foreach (var nameAtt in names)
+                        {
+                            completeName += nameAtt;
+                            
+                            //verifica se o nome atual já está na lista parent
+                            ivk(delegate ()
+                            {
+                                if (parentAtt.ContainsKey(completeName))
+                                {
+                                    //define o nodo encontrado como o parentAtt
+                                    parentAtt = parentAtt[parentAtt.IndexOfKey(completeName)].Nodes;
+                                }
+                                else
+                                {
+                                    //adiciona o nodo na lista e o define como parent
+                                    parentAtt = parentAtt.Add(completeName, nameAtt).Nodes;
+                                }
+                            });
+                            completeName += '.';
+                            //Application.DoEvents();
+                        }
                     }
-                    completeName += '.';
-                    //Application.DoEvents();
+
+                    ivk(delegate ()
+                    {
+                        treeView1.TreeViewNodeSorter = new NodeSorter();
+                        treeView1.Sort();
+                    });
                 }
-            }
-            progressBar1.Hide();
-            treeView1.Show();
+                catch { }
+                ivk(delegate ()
+                {
+                    progressBar1.Hide();
+                    //treeView1.Show();
+                });
+            }, false);
         }
 
         private void editNode(TreeNode node)
@@ -201,8 +266,12 @@ namespace FileVarsEditor
             editNode(e.Node);
         }
 
-        private void delNode(TreeNode node)
+        /*private void delNode(TreeNode node)
         {
+
+            
+
+           // Application.DoEvents();
             if (node.Nodes.Count > 0)
             {
                 while (node.Nodes.Count > 0)
@@ -210,11 +279,6 @@ namespace FileVarsEditor
             }
 
             var parentNode = node.Parent;
-            if (File.Exists(node.Name))
-            {
-                File.Delete(node.Name);
-            }
-
             if (parentNode != null)
             {
                 if (parentNode.Nodes.Contains(node))
@@ -225,6 +289,65 @@ namespace FileVarsEditor
                 if (treeView1.Nodes.Contains(node))
                     treeView1.Nodes.Remove(node);
             }
+            
+            if (File.Exists(node.Name))
+            {
+                File.Delete(node.Name);
+            }
+
+
+            
+        }*/
+
+        private void delNode(TreeNode node)
+        {
+
+            var parentNode = node.Parent;
+            if (parentNode != null)
+            {
+                if (parentNode.Nodes.Contains(node))
+                    parentNode.Nodes.Remove(node);
+            }
+            else
+            {
+                if (treeView1.Nodes.Contains(node))
+                    treeView1.Nodes.Remove(node);
+            }
+
+
+            EasyThread.StartNew(delegate (EasyThread sender, object args)
+            {
+                if (File.Exists(node.Name))
+                {
+                    File.Delete(node.Name);
+                }
+
+                var childs = new string[] { };
+
+                ivk(delegate ()
+                {
+                    childs = Directory.GetFiles(Path.GetDirectoryName(node.Name), Path.GetFileName(node.Name) + "*");
+                    progressBar1.Maximum = childs.Length;
+                    progressBar1.Value = 0;
+                    progressBar1.Show();
+                });
+
+                Parallel.ForEach(childs, delegate (string curr) {
+                    try { File.Delete(curr); } catch { }
+                    ivk(delegate ()
+                    {
+                        try { progressBar1.Value = progressBar1.Value + 1; } catch { }
+                    });
+                });
+
+                ivk(delegate ()
+                {
+                    progressBar1.Hide();
+                });
+            }, false);
+
+
+
         }
 
         private void menuStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -408,14 +531,56 @@ namespace FileVarsEditor
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            Process.GetCurrentProcess().Kill();
+            e.Cancel = true;
+            this.Visible = false;
+            Thread th = new Thread(delegate ()
+            {
+                EasyThread.stopAllThreads(true);
+                Process.GetCurrentProcess().Kill();
+            });
+            th.Start();
         }
-    }
 
-    public abstract class Prompt
-    {
+        private void toolStripTextBox2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.loadLastFoldersList();
+        }
+
         
     }
 
-    
+    public class NodeSorter : IComparer
+    {
+        public int Compare(object x, object y)
+        {
+            string tx = ((TreeNode)x).Text;
+            string ty = ((TreeNode)y).Text;
+            if ((tx.Length < 7) && (ty.Length < 7) &&(tx == getOnly(tx) && (ty == getOnly(ty))))
+            {
+                return int.Parse(tx).CompareTo(int.Parse(ty));
+            }
+            else
+                return tx.CompareTo(ty);
+
+        }
+
+        public string getOnly(string t, string only = "0123456789")
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (var c in t)
+                if (only.Contains(c))
+                    sb.Append(c);
+
+            return sb.ToString();
+
+        }
+    }
+
+
+
 }
