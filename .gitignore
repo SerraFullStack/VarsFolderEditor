@@ -24,6 +24,7 @@
 *.sdf
 ipch/
 obj/
+vars/
 Ankh.NoLoad
 
 #Tooling

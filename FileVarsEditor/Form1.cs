@@ -117,7 +117,7 @@ namespace FileVarsEditor
                 try
                 {
                     //lista os arquivos
-                    string[] files = Directory.GetFiles(globalDbPath);
+                    string[] files = getVarsFiles(globalDbPath);
                     
                     ivk(delegate ()
                     {
@@ -134,8 +134,15 @@ namespace FileVarsEditor
                             progressBar1.Value = progressBar1.Value + 1;
                         });
 
-                        var att = Path.GetFileName(attFname);
-                        string[] names = att.Split('.');
+                        //var att = Path.GetFileName(attFname);
+                        var att = attFname.Substring(globalDbPath.Length + 1);
+                        char sep = '.';
+                        if (att.Contains("\\"))
+                            sep = '\\';
+                        else if (att.Contains("/"))
+                            sep = '/';
+
+                        string[] names = att.Split(sep);
                         string completeName = globalDbPath + "\\";
                         
                         foreach (var nameAtt in names)
@@ -156,7 +163,7 @@ namespace FileVarsEditor
                                     parentAtt = parentAtt.Add(completeName, nameAtt).Nodes;
                                 }
                             });
-                            completeName += '.';
+                            completeName += sep;
                             //Application.DoEvents();
                         }
                     }
@@ -551,6 +558,31 @@ namespace FileVarsEditor
             this.loadLastFoldersList();
         }
 
+        private string[] getVarsFiles(string path)
+        {
+            List<string> result = new List<string>();
+            result.AddRange(Directory.GetFiles(path));
+
+            var folders = Directory.GetDirectories(path);
+            Parallel.ForEach(folders, delegate (string currFolder)
+            {
+                string[] fFiles = getVarsFiles(currFolder);
+                result.AddRange(fFiles);
+                /*Parallel.ForEach(fFiles, delegate (string currFFile)
+                {
+                    string temp = currFFile.Substring(path.Length);
+                    if ("\\/".Contains(temp[0]))
+                        temp = temp.Substring(1);
+
+                    temp = temp.Replace("\\", ".").Replace("/", ".");
+                    temp = path + "\\" + temp;
+
+                    result.Add(temp);
+                });*/
+            });
+
+            return result.ToArray();
+        }
         
     }
 
