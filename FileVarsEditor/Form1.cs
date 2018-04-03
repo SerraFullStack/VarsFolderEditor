@@ -117,8 +117,42 @@ namespace FileVarsEditor
                 try
                 {
                     //lista os arquivos
-                    string[] files = getVarsFiles(globalDbPath);
-                    
+                    List<string> filesT= getVarsFiles(globalDbPath).ToList();
+                    //filesT.Sort((item1, item2) => item1.CompareTo(item2));
+                    filesT.Sort(delegate(string item1, string item2) {
+                        string[] fName1 = item1.Split('.');
+                        string[] fName2 = item2.Split('.');
+
+
+                        int c = 0;
+                        Parallel.For(c, fName1.Length, delegate (int curr)
+                        {
+                            if (isNumber(fName1[curr]))
+                                fName1[curr] = int.Parse(fName1[curr]).ToString("000000000000000");
+                        });
+
+                        c = 0;
+                        Parallel.For(c, fName2.Length, delegate (int curr)
+                        {
+                            if (isNumber(fName2[curr]))
+                                fName2[curr] = int.Parse(fName2[curr]).ToString("000000000000000");
+                        });
+
+                        string compFName1 = "";
+                        foreach (var curr in fName1)
+                            compFName1 += curr + ".";
+
+                        string compFName2 = "";
+                        foreach (var curr in fName2)
+                            compFName2 += curr + ".";
+
+                        return compFName1.CompareTo(compFName2);
+
+
+                    });
+                    string[] files = filesT.ToArray();
+
+
                     ivk(delegate ()
                     {
                         treeView1.Nodes.Clear();
@@ -168,11 +202,11 @@ namespace FileVarsEditor
                         }
                     }
 
-                    ivk(delegate ()
+                    /*ivk(delegate ()
                     {
                         treeView1.TreeViewNodeSorter = new NodeSorter();
                         treeView1.Sort();
-                    });
+                    });*/
                 }
                 catch { }
                 ivk(delegate ()
@@ -583,7 +617,23 @@ namespace FileVarsEditor
 
             return result.ToArray();
         }
-        
+
+        public bool isNumber(string n)
+        {
+            int cont = 0;
+            while (cont < n.Length)
+            {
+                if (!("0123456789".Contains(n[cont])))
+                    return false;
+                else if (cont == 10)
+                    return false;
+                cont++;
+            }
+
+            return true;
+
+        }
+
     }
 
     public class NodeSorter : IComparer
