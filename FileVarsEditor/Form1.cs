@@ -120,33 +120,38 @@ namespace FileVarsEditor
                     List<string> filesT= getVarsFiles(globalDbPath).ToList();
                     //filesT.Sort((item1, item2) => item1.CompareTo(item2));
                     filesT.Sort(delegate(string item1, string item2) {
-                        string[] fName1 = item1.Split('.');
-                        string[] fName2 = item2.Split('.');
-
-
-                        int c = 0;
-                        Parallel.For(c, fName1.Length, delegate (int curr)
+                        if (item1 != null && item2 != null)
                         {
-                            if (isNumber(fName1[curr]))
-                                fName1[curr] = int.Parse(fName1[curr]).ToString("000000000000000");
-                        });
+                            string[] fName1 = item1.Split(new char[] { '.', '/', '\\' });
+                            string[] fName2 = item2.Split(new char[] { '.', '/', '\\' });
 
-                        c = 0;
-                        Parallel.For(c, fName2.Length, delegate (int curr)
-                        {
-                            if (isNumber(fName2[curr]))
-                                fName2[curr] = int.Parse(fName2[curr]).ToString("000000000000000");
-                        });
+                            int c = 0;
+                            Parallel.For(c, fName1.Length, delegate (int curr)
+                            {
+                                if (isNumber(fName1[curr]))
+                                    fName1[curr] = int.Parse(fName1[curr]).ToString("000000000000000");
+                            });
 
-                        string compFName1 = "";
-                        foreach (var curr in fName1)
-                            compFName1 += curr + ".";
+                            c = 0;
+                            Parallel.For(c, fName2.Length, delegate (int curr)
+                            {
+                                if (isNumber(fName2[curr]))
+                                    fName2[curr] = int.Parse(fName2[curr]).ToString("000000000000000");
+                            });
 
-                        string compFName2 = "";
-                        foreach (var curr in fName2)
-                            compFName2 += curr + ".";
 
-                        return compFName1.CompareTo(compFName2);
+                            string compFName1 = "";
+                            foreach (var curr in fName1)
+                                compFName1 += curr + ".";
+
+                            string compFName2 = "";
+                            foreach (var curr in fName2)
+                                compFName2 += curr + ".";
+
+                            return compFName1.CompareTo(compFName2);
+                        }
+                        else
+                            return 0;
 
 
                     });
@@ -170,6 +175,8 @@ namespace FileVarsEditor
 
                         //var att = Path.GetFileName(attFname);
                         var att = attFname.Substring(globalDbPath.Length + 1);
+
+                        if (att.ToLower().Contains("time")) ;
                         char sep = '.';
                         if (att.Contains("\\"))
                             sep = '\\';
@@ -304,6 +311,11 @@ namespace FileVarsEditor
 
         private void treeView1_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e)
         {
+            if (editingNode != e.Node)
+                checkBox1.Checked = false;
+            else
+                checkBox1.Checked = true;
+
             editNode(e.Node);
         }
 
@@ -358,28 +370,52 @@ namespace FileVarsEditor
 
             EasyThread.StartNew(delegate (EasyThread sender, object args)
             {
-                if (File.Exists(node.Name))
+                string fName = "";
+                ivk(delegate () { fName = node.Name; });
+
+                List<string> childs = new List<string>();
+                childs.Add(fName);
+                Directory.GetFiles(Path.GetDirectoryName(fName), Path.GetFileName(fName) + "*").ToString();
+
+                int max = 1;
+                while (childs.Count > 0)
                 {
-                    File.Delete(node.Name);
-                }
+                    if (File.Exists(childs.Last()))
+                    {
+                        File.Delete(childs.Last());
+                        childs.RemoveAt(childs.Count - 1);
+                    }
+                    else if (Directory.Exists(childs.Last()))
+                    {
+                        var tempFiles = Directory.GetFiles(childs.Last());
+                        var tempFolders = Directory.GetDirectories(childs.Last());
 
-                var childs = new string[] { };
+                        if ((tempFiles.Length == 0) && (tempFolders.Length == 0))
+                        {
+                            Directory.Delete(childs.Last(), true);
+                            childs.RemoveAt(childs.Count-1);
+                        }
+                        else
+                        {
+                            childs.AddRange(tempFiles);
+                            childs.AddRange(tempFolders);
 
-                ivk(delegate ()
-                {
-                    childs = Directory.GetFiles(Path.GetDirectoryName(node.Name), Path.GetFileName(node.Name) + "*");
-                    progressBar1.Maximum = childs.Length;
-                    progressBar1.Value = 0;
-                    progressBar1.Show();
-                });
+                            max += tempFiles.Length + tempFolders.Length;
+                        }
+                    }
+                    else
+                    {
+                        childs.RemoveAt(childs.Count - 1);
 
-                Parallel.ForEach(childs, delegate (string curr) {
-                    try { File.Delete(curr); } catch { }
+                    }
+
                     ivk(delegate ()
                     {
-                        try { progressBar1.Value = progressBar1.Value + 1; } catch { }
+                        progressBar1.Maximum = max;
+                        progressBar1.Value = max - childs.Count;
                     });
-                });
+                }
+                
 
                 ivk(delegate ()
                 {
@@ -441,6 +477,8 @@ namespace FileVarsEditor
                     {
                         this.Invoke((MethodInvoker)delegate ()
                         {
+                            if (att > max)
+                                att = max;
                             progressBar1.Maximum = max;
                             progressBar1.Value = att;
 
@@ -598,22 +636,20 @@ namespace FileVarsEditor
             result.AddRange(Directory.GetFiles(path));
 
             var folders = Directory.GetDirectories(path);
-            Parallel.ForEach(folders, delegate (string currFolder)
+            Parallel.ForEach(folders, delegate(string currFolder) 
             {
                 string[] fFiles = getVarsFiles(currFolder);
-                result.AddRange(fFiles);
-                /*Parallel.ForEach(fFiles, delegate (string currFFile)
+                lock(result)
                 {
-                    string temp = currFFile.Substring(path.Length);
-                    if ("\\/".Contains(temp[0]))
-                        temp = temp.Substring(1);
-
-                    temp = temp.Replace("\\", ".").Replace("/", ".");
-                    temp = path + "\\" + temp;
-
-                    result.Add(temp);
-                });*/
+                    result.AddRange(fFiles);
+                }
             });
+
+            for (int cont = result.Count-1; cont >= 0; cont--)
+            {
+                if (result[cont] == null)
+                    result.RemoveAt(cont);
+            }
 
             return result.ToArray();
         }
@@ -621,19 +657,34 @@ namespace FileVarsEditor
         public bool isNumber(string n)
         {
             int cont = 0;
+            int numbers = 0;
             while (cont < n.Length)
             {
                 if (!("0123456789".Contains(n[cont])))
                     return false;
                 else if (cont == 10)
                     return false;
+                else numbers++;
                 cont++;
             }
 
-            return true;
+            return numbers > 0;
 
         }
 
+        DateTime lastCurrentFileModification = DateTime.MinValue;
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if ((checkBox1.Checked) && (editingNode != null))
+            {
+                DateTime fDateTime = File.GetLastWriteTime(editingNode.Name);
+                if (fDateTime != lastCurrentFileModification)
+                {
+                    editNode(editingNode);
+                    lastCurrentFileModification = fDateTime;
+                }
+            }
+        }
     }
 
     public class NodeSorter : IComparer

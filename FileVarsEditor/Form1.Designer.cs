@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.button3 = new System.Windows.Forms.Button();
@@ -47,6 +48,8 @@
             this.recentesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exportarOBancoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.importarUmBancoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -80,6 +83,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.checkBox1);
             this.splitContainer1.Panel2.Controls.Add(this.lbModifiedAt);
             this.splitContainer1.Panel2.Controls.Add(this.lbCreatedAt);
             this.splitContainer1.Panel2.Controls.Add(this.progressBar1);
@@ -263,6 +267,24 @@
             this.importarUmBancoToolStripMenuItem.Text = "Importar um banco";
             this.importarUmBancoToolStripMenuItem.Click += new System.EventHandler(this.importarUmBancoToolStripMenuItem_Click);
             // 
+            // checkBox1
+            // 
+            this.checkBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox1.Location = new System.Drawing.Point(422, 532);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(108, 17);
+            this.checkBox1.TabIndex = 9;
+            this.checkBox1.Text = "Monitorar arquivo";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
+            // timer1
+            // 
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 250;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -310,6 +332,8 @@
         private System.Windows.Forms.ToolStripMenuItem importarUmBancoToolStripMenuItem;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.ToolStripMenuItem recentesToolStripMenuItem;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Timer timer1;
     }
 }
 
